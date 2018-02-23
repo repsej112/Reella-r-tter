@@ -6,11 +6,9 @@ tolerance = 0.0001
 i_tot = 0
 def newtons_metod(function_string, deriv_string, x):
     global i_tot
-    dx = 1 
-    y = 1
-    Error = False
-    i = 0
-    if evaluate_function(deriv_string,x) == 0:
+    dx = 1; y = 1; Error = False; i = 0
+    
+    if evaluate_function(deriv_string,x) == 0: #Förhindra att newton startar på extrempunkt
         x = 3
     while abs(dx) > tolerance:
         y = evaluate_function(function_string,x)
@@ -30,10 +28,17 @@ def newtons_metod(function_string, deriv_string, x):
 
 from polynomderiverare2 import get_all_derivatives
 import datetime
+
 """
 Skriv polynomet i variabeln poly för att hitta dess reella nollställen
-exempel input "3x**6 -2x+ 5x+2", "3x^6 -2*x+ 5x+ 2"
-Sen är det bara att köra functionen get_real_roots(poly)
+exempel: 
+poly =  "3x**6 -2x+ 5x+2"
+eller
+poly = "3*x^6 -2*x+ 5*x+2"
+
+Sen är det bara att köra kommandot 
+roots = get_real_roots(poly)[0]
+print(roots)
 
 """
 
@@ -63,7 +68,7 @@ def get_real_roots(poly):
     timeForDerivatives = int((b - a).total_seconds() * 1000)
     
     #Modifierar poly för att fungera för eval()
-    # Byter ut t.ex. 5x, x^2 till 5*x, x**2
+    # Byter ut t.ex. 5x + x^2 till 5*x + x**2
     polyForEval = list(poly) 
     for i in range(1, len(polyForEval)):
         prev_char = polyForEval[i-1]
@@ -79,9 +84,9 @@ def get_real_roots(poly):
     
     """Själva processen börjar här
     1. Hitta nollställen till näst lägsta derivatan(rät linje)
-    2. De förra nollställena är primitiva funktionens extrempunkter
+    2. De hittade nollställena är primitiva funktionens extrempunkter
     3. Hitta den primitiva funktionens nollställe genom att leta mellan och utanför 
-       extrempunkterna m.h.a newtons method
+       extrempunkterna m.h.a newtons method och vissa vilkor
     4. Gör om processen tills moder funktionen är nådd
     """
     guesses = [0]
@@ -136,10 +141,10 @@ def get_real_roots(poly):
                     guesses = [roots[0] - dx] + guesses #Vänster om den yttre extrempunkten
                 if (b <= 0):
                     guesses = guesses + [roots[-1] + dx] #Höger om den yttre extrempunkten
-            else:
+            else: #Om inga extrempunkter finns
                 guesses = [0] 
 
-    """"Och slutligen"""
+    """"Och slutligen för själva moderfunktionen"""
     roots = []
 
     for guess in guesses:
@@ -151,9 +156,13 @@ def get_real_roots(poly):
             
     return roots, i_tot, timeForDerivatives #Obs endast multipliciet <= 2 kan räknas med
 
-
+"""
+Denna del är till för att lösa flera polynom från ett textdokument och 
+spara värden för tid och error i ett textdokument.
+(denna del nedanför behövs alltså inte om man bara ska köra lösaren på ett polynom)
+"""
 file = open('polynomials.txt','r')
-wfile = open('polexResultsPolynomials.txt','w')
+wfile = open('resultsPolynomials.txt','w')
 
 m = 0
 for line in file:
@@ -179,17 +188,6 @@ for root in found_roots:
     x = root
     sumFunctionRoots += abs(eval(poly))
 print("Ackumulerad summa av rötterna: ", sumFunctionRoots)
-
-    
+ 
 file.close()
 wfile.close()
-
-        
-    
-
-
-    
-
-
-
-    
